@@ -133,11 +133,11 @@ function ScreenshotReporter(options) {
     this.excludeSkippedSpecs = options.excludeSkippedSpecs || false;
     this.takeScreenShotsForSkippedSpecs =
         options.takeScreenShotsForSkippedSpecs || false;
-    this.gatherBrowserLogs =
-        options.gatherBrowserLogs || true;
+    this.gatherBrowserLogs = options.serverSideTests ? false :
+        (options.gatherBrowserLogs || true);
     this.takeScreenShotsOnlyForFailedSpecs =
         options.takeScreenShotsOnlyForFailedSpecs || false;
-    this.disableScreenshots = options.disableScreenshots || false;
+    this.disableScreenshots = options.serverSideTests || options.disableScreenshots || false;
     this.clientDefaults = options.clientDefaults || {};
     if (options.searchSettings) { //settings in earlier "format" there?
         this.clientDefaults.searchSettings = options.searchSettings;
@@ -260,7 +260,12 @@ class Jasmine2Reporter {
 
     async _takeScreenShotAndAddMetaData(result) {
 
-        const capabilities = await browser.getCapabilities();
+        let capabilities = {
+          get() { return ''; }
+        };
+        if (!this._screenshotReporter.disableScreenshots) {
+            capabilities = await browser.getCapabilities();
+        }
         let suite = this._buildSuite();
 
         let descriptions = util.gatherDescriptions(

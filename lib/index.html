@@ -26,18 +26,6 @@
         <button class="btn btn-default" ng-class="{active: !ctrl.displayTime}"
                 ng-click="ctrl.displayTime = !ctrl.displayTime">TIME
         </button>
-        <button class="btn btn-default" ng-class="{active: !ctrl.displayBrowser}"
-                ng-click="ctrl.displayBrowser = !ctrl.displayBrowser">BROWSER
-        </button>
-        <button class="btn btn-default" ng-class="{active: !ctrl.displaySessionId}"
-                ng-click="ctrl.displaySessionId = !ctrl.displaySessionId">SESSION ID
-        </button>
-        <button class="btn btn-default" ng-class="{active: !ctrl.displayOS}"
-                ng-click="ctrl.displayOS = !ctrl.displayOS">OS
-        </button>
-        <button class="btn btn-default" ng-class="{active: ctrl.inlineScreenshots}"
-                ng-click="ctrl.inlineScreenshots = !ctrl.inlineScreenshots">INLINE SCREENSHOTS
-        </button>
     </div>
 </h2>
 <div class="bh-total-duration" ng-if="ctrl.showTotalDurationIn==='belowHeader'" ><span>Duration {{ ctrl.totalDuration() | timeFormat:ctrl.totalDurationFormat }}</span></div>
@@ -66,9 +54,6 @@
     <button class="btn btn-default" ng-class="{active: searchSettings.pending}"
             ng-click="searchSettings.pending = !searchSettings.pending">PENDING
     </button>
-    <button class="btn btn-default" ng-class="{active: searchSettings.withLog}"
-            ng-click="searchSettings.withLog = !searchSettings.withLog">OR WITH LOG
-    </button>
     <br><br>
 </div>
 
@@ -79,13 +64,9 @@
         <th>Status</th>
         <th ng-if="!ctrl.displayTime" ng-show="ctrl.displayTime">Time</th>
         <th>Description</th>
-        <th ng-if="!ctrl.displayBrowser" ng-show="ctrl.displayBrowser">Browser</th>
-        <th ng-if="!ctrl.displaySessionId" ng-show="ctrl.displaySessionId">Session ID</th>
-        <th ng-if="!ctrl.displayOS" ng-show="ctrl.displayOS">OS</th>
         <th>Message</th>
         <th>Log</th>
         <th>Stack</th>
-        <th>Screen</th>
     </tr>
     </thead>
     <tbody ng-repeat="result in ctrl.results | bySearchSettings:searchSettings">
@@ -111,9 +92,6 @@
             <span class="label label-default" ng-class="{'label-warning': result.duration > ctrl.warningTime, 'label-danger': result.duration > ctrl.dangerTime}">{{ctrl.round(result.duration, 1)}} s</span>
         </td>
         <td class="mediumColumn c-sdescription">{{ctrl.getShortDescription(result.description)}}</td>
-        <td ng-if="!ctrl.displayBrowser" ng-show="ctrl.displayBrowser" class="c-browser">{{result.browser.name}} {{result.browser.version}}</td>
-        <td ng-if="!ctrl.displaySessionId" ng-show="ctrl.displaySessionId" class="c-session-id">{{result.sessionId}}</td>
-        <td ng-if="!ctrl.displayOS" ng-show="ctrl.displayOS" class="c-display-os">{{result.os}}</td>
         <td class="c-messages">
             <div ng-if="ctrl.isValueAnArray(result.message)">
                 <span class="message" ng-repeat="message in result.message track by $index">{{message}}</span>
@@ -134,20 +112,6 @@
                 </span>
                 <!-- Stacktrace Modal -->
                 <pbr-stack-modal index="$index" data="result"></pbr-stack-modal>
-            </div>
-        </td>
-        <td ng-class="{'mediumColumn': ctrl.inlineScreenshots && result.screenShotFile}" class="c-in-screenshots">
-            <div ng-if="!result.pending && result.screenShotFile">
-                <span ng-if="!ctrl.inlineScreenshots && result.screenShotFile"
-                      class="label label-white ng-binding pull-right"
-                      data-toggle="modal"
-                      data-target="#imageModal{{$index}}">
-                        <span class="glyphicon glyphicon-picture black"></span>
-                </span>
-                <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
-                    <img ng-src="{{result.screenShotFile}}" class="screenshotLink" alt="inline screenshot"></a>
-                <!-- Screenshot Modal -->
-                <pbr-screenshot-modal index="$index" data="result" has-previous="ctrl.hasPreviousScreenshot($index)" previous="ctrl.getPreviousScreenshotIdx($index)" has-next="ctrl.hasNextScreenshot($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>
             </div>
         </td>
     </tr>

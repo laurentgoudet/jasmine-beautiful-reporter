@@ -479,22 +479,24 @@ function patch (fs) {
   })
 
   // legacy names
+  var FileReadStream = ReadStream
   Object.defineProperty(fs, 'FileReadStream', {
     get: function () {
-      return ReadStream
+      return FileReadStream
     },
     set: function (val) {
-      ReadStream = val
+      FileReadStream = val
     },
     enumerable: true,
     configurable: true
   })
+  var FileWriteStream = WriteStream
   Object.defineProperty(fs, 'FileWriteStream', {
     get: function () {
-      return WriteStream
+      return FileWriteStream
     },
     set: function (val) {
-      WriteStream = val
+      FileWriteStream = val
     },
     enumerable: true,
     configurable: true
@@ -806,7 +808,7 @@ module.exports = function (it) {
 /* 23 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.9' };
+var core = module.exports = { version: '2.6.10' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -4888,9 +4890,9 @@ function ScreenshotReporter(options) {
     this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
     this.excludeSkippedSpecs = options.excludeSkippedSpecs || false;
     this.takeScreenShotsForSkippedSpecs = options.takeScreenShotsForSkippedSpecs || false;
-    this.gatherBrowserLogs = options.gatherBrowserLogs || true;
+    this.gatherBrowserLogs = options.serverSideTests ? false : options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs = options.takeScreenShotsOnlyForFailedSpecs || false;
-    this.disableScreenshots = options.disableScreenshots || false;
+    this.disableScreenshots = options.serverSideTests || options.disableScreenshots || false;
     this.clientDefaults = options.clientDefaults || {};
     if (options.searchSettings) {
         //settings in earlier "format" there?
@@ -5179,11 +5181,24 @@ var Jasmine2Reporter = function () {
                     while (1) {
                         switch (_context8.prev = _context8.next) {
                             case 0:
-                                _context8.next = 2;
+                                capabilities = {
+                                    get: function get() {
+                                        return '';
+                                    }
+                                };
+
+                                if (this._screenshotReporter.disableScreenshots) {
+                                    _context8.next = 5;
+                                    break;
+                                }
+
+                                _context8.next = 4;
                                 return browser.getCapabilities();
 
-                            case 2:
+                            case 4:
                                 capabilities = _context8.sent;
+
+                            case 5:
                                 suite = this._buildSuite();
                                 descriptions = util.gatherDescriptions(suite, [result.description]);
                                 baseName = this._screenshotReporter.pathBuilder(null, descriptions, result, capabilities);
@@ -5215,24 +5230,24 @@ var Jasmine2Reporter = function () {
                                 testWasExecuted = !['pending', 'disabled', 'excluded'].includes(result.status);
 
                                 if (!(testWasExecuted && considerScreenshot)) {
-                                    _context8.next = 32;
+                                    _context8.next = 34;
                                     break;
                                 }
 
-                                _context8.prev = 21;
-                                _context8.next = 24;
+                                _context8.prev = 23;
+                                _context8.next = 26;
                                 return browser.takeScreenshot();
 
-                            case 24:
+                            case 26:
                                 png = _context8.sent;
 
                                 util.storeScreenShot(png, screenShotPath);
-                                _context8.next = 32;
+                                _context8.next = 34;
                                 break;
 
-                            case 28:
-                                _context8.prev = 28;
-                                _context8.t0 = _context8['catch'](21);
+                            case 30:
+                                _context8.prev = 30;
+                                _context8.t0 = _context8['catch'](23);
 
                                 if (_context8.t0['name'] === 'NoSuchWindowError') {
                                     console.warn('Protractor-beautiful-reporter could not take the screenshot because target window is already closed');
@@ -5242,18 +5257,18 @@ var Jasmine2Reporter = function () {
                                 }
                                 metaData.screenShotFile = void 0;
 
-                            case 32:
+                            case 34:
 
                                 util.storeMetaData(metaData, jsonPartsPath, descriptions);
                                 util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
                                 this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
 
-                            case 35:
+                            case 37:
                             case 'end':
                                 return _context8.stop();
                         }
                     }
-                }, _callee8, this, [[21, 28]]);
+                }, _callee8, this, [[23, 30]]);
             }));
 
             function _takeScreenShotAndAddMetaData(_x4) {
