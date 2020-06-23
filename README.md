@@ -271,7 +271,7 @@ If you want no screenshots at all, set the `disableScreenshots` option to true.
  });
  ```
 
-Default is `Generated test report`.
+Default is `Test results`.
 
 ### Change html report file name (optional)
  Also you can change document name for the html report generated using the `docName:` option:
